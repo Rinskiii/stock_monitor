@@ -1,0 +1,95 @@
+"""
+monitor.notifier
+================
+
+Модуль для отправки пользовательских уведомлений.
+
+Назначение:
+    Предоставляет единый интерфейс для отображения уведомлений.
+    На текущем этапе поддерживаются только системные уведомления Linux.
+    ``notify-send``.
+
+    В дальнейшем модуль может быть расширен поддержкой:
+        - Telegram;
+        - Discord;
+        - электронной почты;
+        - звуковых уведомлений.
+
+Использование:
+    >>> from monitor.notifier import notify
+    >>> notify(
+    ...     title="Stock Monitor",
+    ...     message="RKLB entered 5m consolidation."
+    ... )
+"""
+
+from __future__ import annotations
+
+import shutil
+import subprocess
+
+
+def notify(
+    title: str,
+    message: str,
+    timeout: int = 8000,
+) -> None:
+    """
+    Отображает системное уведомление в Linux.
+
+    Для показа уведомлений используется утилита ``notify-send``,
+    входящая в пакет ``libnotify``.
+
+    Args:
+        title (str):
+            Заголовок уведомления.
+
+        message (str):
+            Основной текст уведомления.
+
+        timeout (int, optional):
+            Время отображения уведомления в миллисекундах.
+            По умолчанию 8000 (8 секунд).
+
+    Returns:
+        None
+
+    Raises:
+        RuntimeError:
+            Если утилита ``notify-send`` отсутствует в системе.
+
+        subprocess.SubprocessError:
+            Если произошла ошибка во время запуска процесса.
+
+    Examples:
+        >>> notify(
+        ...     title="5m Consolidation",
+        ...     message="RKLB"
+        ... )
+
+        >>> notify(
+        ...     title="Breakout",
+        ...     message="CRDO",
+        ...     timeout=12000,
+        ... )
+    """
+
+    # Проверяем наличие системной утилиты notify-send.
+    if shutil.which("notify-send") is None:
+        raise RuntimeError(
+            "System utility 'notify-send' was not found. "
+            "Install package 'libnotify-bin'."
+        )
+
+    subprocess.run(
+        [
+            "notify-send",
+            "-t",
+            str(timeout),
+            title,
+            message,
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )

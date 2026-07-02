@@ -27,6 +27,7 @@ venv/
 
 # Local data
 data/alerts.json
+data/logs/*.log
 
 # Jupyter
 .ipynb_checkpoints/

@@ -23,7 +23,7 @@ from typing import Iterable
 
 import pandas as pd
 
-from data_source import download_from_yahoo
+from monitor.data_source import download_from_yahoo
 
 from config import CONSOLIDATION_QUANTILE, WINDOW_5M
 

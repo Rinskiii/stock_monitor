@@ -45,13 +45,16 @@ def _download_5m_data(ticker: str) -> pd.DataFrame:
     """
 
     df = yf.download(
-        ticker=ticker,
+        tickers=ticker,
         period="5d",
         interval="5m",
         auto_adjust=True,
         progress=False,
     )
-
+    
+    # print(f"{ticker}: {len(df)} candles")
+    
+    # Проверяем, что данные были загружены
     if df.empty:
         raise ValueError(f"No market data received for '{ticker}'.")
 
@@ -61,6 +64,7 @@ def _download_5m_data(ticker: str) -> pd.DataFrame:
         for column in df.columns
     ]
 
+    # Удаляем строки с отсутствующими данными
     df = df.dropna(subset=["Open", "High", "Low", "Close"])
 
     if df.empty:
@@ -132,6 +136,13 @@ def is_consolidating_now(
 
     last_width = df["Corridor_Width_%"].iloc[-1]
 
+#     print(
+#         f"{ticker}: "
+#         f"width={last_width:.2f}% | "
+#         f"threshold={threshold:.2f}% | "
+#         f"consolidating={last_width < threshold}"
+# )
+
     return bool(last_width < threshold)
 
 
@@ -153,11 +164,15 @@ def scan_watchlist(
     consolidating: list[str] = []
 
     for ticker in watchlist:
+        print(f"Scanning {ticker}...")
+        
         try:
             if is_consolidating_now(ticker):
                 consolidating.append(ticker)
-        except Exception:
+        except Exception as error:
             # Ошибка одного тикера не должна останавливать монитор.
+            print(f'[ERROR] {ticker}: {error}')
             continue
 
     return consolidating
+    # return ['CRDO', 'RKBL']

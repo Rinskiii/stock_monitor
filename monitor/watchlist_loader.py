@@ -41,8 +41,10 @@ def load_watchlist() -> list[str]:
         или список содержит элементы, отличные от строк.
     """
 
+    # Импортируем модуль watchlist по имени, указанному в конфигурации
     module = import_module(f"watchlists.{WATCHLIST_NAME}")
 
+    # Проверяем наличие функции get_watchlist() в модуле
     watchlist = module.get_watchlist()
 
     if not isinstance(watchlist, list):

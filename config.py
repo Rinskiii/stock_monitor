@@ -14,6 +14,9 @@ DATA_DIR = PROJECT_ROOT / "data"
 # Директория с логами
 LOGS_DIR = DATA_DIR / "logs"
 
+# Директория для хранения исторических рыночных данных
+MARKET_DATA_DIR = DATA_DIR / "market_data"
+
 # Файл хранения активных сигналов
 ALERTS_FILE = DATA_DIR / "alerts.json"
 

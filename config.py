@@ -38,3 +38,8 @@ WINDOW_5M = 12
 
 # Нижний квантиль, определяющий узкую консолидацию
 CONSOLIDATION_QUANTILE = 0.20
+
+# Источник рыночных данных. Возможные значения:
+# - "yahoo" — Yahoo Finance (через yfinance);
+# - "parquet" — локальные файлы Parquet, загруженные через скрипт ``scripts/download_market_data.py``.
+DATA_SOURCE = "parquet"

@@ -23,9 +23,9 @@ from typing import Iterable
 
 import pandas as pd
 
-from monitor.data_source import download_from_yahoo
+from monitor.data_source import download_from_yahoo, load_parquet
 
-from config import CONSOLIDATION_QUANTILE, WINDOW_5M
+from config import CONSOLIDATION_QUANTILE, WINDOW_5M, DATA_SOURCE
 
 
 def _calculate_corridor_width(
@@ -83,8 +83,18 @@ def is_consolidating_now(
         True, если последняя свеча находится в консолидации,
         иначе False.
     """
-
-    df = download_from_yahoo(ticker)
+    if DATA_SOURCE == "yahoo":
+        print('SOURCE: Yahoo Finance')
+        df = download_from_yahoo(ticker)
+    elif DATA_SOURCE == "parquet":
+        print('SOURCE: Parquet')
+        df = load_parquet(ticker)
+    else:
+        raise ValueError(
+            f"Unsupported DATA_SOURCE: '{DATA_SOURCE}'. "
+            "Expected 'yahoo' or 'parquet'."
+    )
+    
     df = _calculate_corridor_width(df, window)
 
     threshold = df["Corridor_Width_%"].quantile(quantile)

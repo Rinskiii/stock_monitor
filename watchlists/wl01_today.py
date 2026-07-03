@@ -22,10 +22,7 @@ def get_watchlist() -> list[str]:
 
     return sorted(
         {
-            "RKLB",
-            "CRDO",
-            "PLTR",
-            "TEM",
-            "NBIS",
+            'NTNX',
+            'OMDA',
         }
     )

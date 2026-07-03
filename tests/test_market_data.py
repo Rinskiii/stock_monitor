@@ -22,36 +22,7 @@ tests.test_market_data
 
 from __future__ import annotations
 
-import pandas as pd
-
-from config import MARKET_DATA_DIR
-
-
-def load_market_data(
-    ticker: str,
-    interval: str = "5m",
-) -> pd.DataFrame:
-    """
-    Загружает локальные исторические данные.
-
-    Args:
-        ticker:
-            Биржевой тикер.
-
-        interval:
-            Таймфрейм.
-
-    Returns:
-        DataFrame с историческими данными.
-
-    Raises:
-        FileNotFoundError:
-            Если файл отсутствует.
-    """
-
-    file_path = MARKET_DATA_DIR / f"{ticker}_{interval}.parquet"
-
-    return pd.read_parquet(file_path)
+from monitor.data_source import load_parquet
 
 
 def main() -> None:
@@ -61,7 +32,7 @@ def main() -> None:
 
     ticker = "NTNX"
 
-    df = load_market_data(ticker)
+    df = load_parquet(ticker)
 
     print("=" * 60)
     print(f"{ticker} ({len(df)} candles)")

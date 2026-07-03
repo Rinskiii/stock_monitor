@@ -5,9 +5,8 @@ monitor.scanner
 Модуль для поиска узкой консолидации на последней свече.
 
 Назначение:
-    Загружает исторические данные через yfinance, рассчитывает ширину
-    ценового коридора и определяет, находится ли инструмент в состоянии
-    узкой консолидации.
+    Получает исторические рыночные данные, рассчитывает ширину ценового коридора и определяет,
+    находится ли инструмент в состоянии узкой консолидации.
 
     Модуль не выводит информацию в консоль и не строит графики.
     Он предназначен исключительно для использования монитором.
@@ -23,54 +22,10 @@ from __future__ import annotations
 from typing import Iterable
 
 import pandas as pd
-import yfinance as yf
+
+from data_source import download_from_yahoo
 
 from config import CONSOLIDATION_QUANTILE, WINDOW_5M
-
-
-def _download_5m_data(ticker: str) -> pd.DataFrame:
-    """
-    Загружает 5-минутные данные по акции за последние 5 торговых дней.
-
-    Args:
-        ticker:
-            Биржевой тикер.
-
-    Returns:
-        DataFrame с OHLC-данными.
-
-    Raises:
-        ValueError:
-            Если данные отсутствуют.
-    """
-
-    df = yf.download(
-        tickers=ticker,
-        period="5d",
-        interval="5m",
-        auto_adjust=True,
-        progress=False,
-    )
-    
-    # print(f"{ticker}: {len(df)} candles")
-    
-    # Проверяем, что данные были загружены
-    if df.empty:
-        raise ValueError(f"No market data received for '{ticker}'.")
-
-    # yfinance иногда возвращает MultiIndex.
-    df.columns = [
-        column[0] if isinstance(column, tuple) else column
-        for column in df.columns
-    ]
-
-    # Удаляем строки с отсутствующими данными
-    df = df.dropna(subset=["Open", "High", "Low", "Close"])
-
-    if df.empty:
-        raise ValueError(f"No valid OHLC data for '{ticker}'.")
-
-    return df
 
 
 def _calculate_corridor_width(
@@ -129,7 +84,7 @@ def is_consolidating_now(
         иначе False.
     """
 
-    df = _download_5m_data(ticker)
+    df = download_from_yahoo(ticker)
     df = _calculate_corridor_width(df, window)
 
     threshold = df["Corridor_Width_%"].quantile(quantile)

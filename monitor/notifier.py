@@ -29,6 +29,21 @@ import shutil
 import subprocess
 
 
+def play_sound() -> None:
+    """
+    Воспроизводит системный звуковой сигнал.
+
+    Используется как часть пользовательского уведомления.
+    """
+
+    subprocess.run(
+        ["canberra-gtk-play", "--id=complete"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+
+
 def notify(
     title: str,
     message: str,
@@ -39,6 +54,12 @@ def notify(
 
     Для показа уведомлений используется утилита ``notify-send``,
     входящая в пакет ``libnotify``.
+
+    Отправляет пользовательское уведомление.
+
+    На текущем этапе уведомление состоит из:
+    - системного уведомления Linux (notify-send);
+    - звукового сигнала (canberra-gtk-play).
 
     Args:
         title (str):
@@ -93,3 +114,5 @@ def notify(
         capture_output=True,
         text=True,
     )
+
+    play_sound()

@@ -84,10 +84,10 @@ def is_consolidating_now(
         иначе False.
     """
     if DATA_SOURCE == "yahoo":
-        print('SOURCE: Yahoo Finance')
+        # print('SOURCE: Yahoo Finance')
         df = download_from_yahoo(ticker)
     elif DATA_SOURCE == "parquet":
-        print('SOURCE: Parquet')
+        # print('SOURCE: Parquet')
         df = load_parquet(ticker)
     else:
         raise ValueError(

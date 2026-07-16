@@ -25,6 +25,7 @@ monitor.notifier
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 
@@ -36,12 +37,15 @@ def play_sound() -> None:
     Используется как часть пользовательского уведомления.
     """
 
-    subprocess.run(
-        ["canberra-gtk-play", "--id=complete"],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        check=False,
+    try:
+        subprocess.run(
+            ["canberra-gtk-play", "--id=complete"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
     )
+    except Exception:
+        pass
 
 
 def notify(
@@ -102,17 +106,39 @@ def notify(
             "Install package 'libnotify-bin'."
         )
 
-    subprocess.run(
-        [
-            "notify-send",
-            "-t",
-            str(timeout),
-            title,
-            message,
-        ],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    # subprocess.run(
+    #     [
+    #         "notify-send",
+    #         "-t",
+    #         str(timeout),
+    #         title,
+    #         message,
+    #     ],
+    #     check=True,
+    #     capture_output=True,
+    #     text=True,
+    # )
+    env = os.environ.copy()
+    env["DISPLAY"] = ":0"
+    env["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=/run/user/1000/bus"
+
+    try:
+        subprocess.run(
+            [
+                "notify-send",
+                "-t",
+                str(timeout),
+                title,
+                message,
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+    except subprocess.CalledProcessError as error:
+        print(f"[notify-send] {error.stderr.strip()}")
+
+
 
     play_sound()
